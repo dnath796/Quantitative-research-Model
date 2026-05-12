@@ -33,11 +33,7 @@ ax.set(title=f'S&P 500 vs. VIX ($\\rho$ = {corr_coeff:.2f})',
        ylabel='VIX log returns',
        xlabel='S&P 500 log returns')
 
-# Create a joint plot with regression and hex bins (to see density)
-# grid = sns.jointplot(x='log_rtn', y='vol_rtn', data=df, kind='reg', 
-#                      joint_kws={'line_kws':{'color':'red'}},
-#                      height=8, ratio=5, space=0.2)
+plt.savefig('sp500_plot.png')
 
-# grid.fig.suptitle(f'S&P 500 vs. VIX Correlation: {corr_coeff:.2f}', y=1.02)
-plt.show()
+
 
