@@ -1,5 +1,6 @@
 import backtrader as bt
 import yfinance as yf
+from datetime import datetime
 
 # 1. Download the data manually using yfinance
 data_df = yf.download('AAPL', start='2020-01-01', end='2023-12-31')
@@ -11,10 +12,8 @@ cerebro = bt.Cerebro()
 cerebro.adddata(data)
 
 
-
-
 # Import the libraries:
-from datetime import datetime
+
 import backtrader as bt
 # Define a class representing the trading strategy:
 class SmaSignal(bt.Signal):
@@ -36,7 +35,7 @@ data = bt.feeds.PandasData(dataname=data_df)
 cerebro = bt.Cerebro(stdstats = False)
 
 cerebro.adddata(data)
-cerebro.broker.setcash(1000.0)
+cerebro.broker.setcash(2000.0)
 cerebro.add_signal(bt.SIGNAL_LONG, SmaSignal)
 cerebro.addobserver(bt.observers.BuySell)
 cerebro.addobserver(bt.observers.Value)
