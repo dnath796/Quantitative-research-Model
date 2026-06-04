@@ -1,6 +1,3 @@
-
-
-
 import pandas as pd
  
 df = pd.read_csv('Task 3 and 4_Loan_Data.csv')
@@ -58,21 +55,4 @@ while r >= 0:
     r -= 1
 
 print(l)
-
-
-
-
-
-
-
-
-
-
-# The provided code performs data analysis by calculating the probability of default for a given set of observations. The technique used for this analysis is maximum likelihood estimation. The intuition behind the usage of maximum likelihood estimation is that it is a common method for estimating the parameters of a statistical model. In this case, the parameters are the probabilities of default for different sets of observations. Maximum likelihood estimation seeks to find the parameter values that maximize the likelihood function for the observed data.
-
-# The code first reads in a CSV file using Pandas. It then creates two lists, x and y, that correspond to the 'observation' and 'rank' columns in the data, respectively. These lists are then used to calculate the default and total values for each rank in the data.
-
-# The log-likelihood function is defined to calculate the likelihood of a given set of parameters. The likelihood function is used to calculate the probability of observing the data given the parameter values. The code then initializes a three-dimensional array, dp, that is used to store the calculated log-likelihood values for different sets of observations. The first dimension represents the number of iterations performed, the second dimension represents the rank of the observation, and the third dimension represents the log-likelihood and the index of the previous observation.
-
-# Finally, the code calculates the log-likelihood for the given data set by using the dp array. It then prints the results and outputs the indices of the observations that were used in the calculation.
 

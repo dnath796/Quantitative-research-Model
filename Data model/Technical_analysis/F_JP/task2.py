@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import date, timedelta
 
-df = pd.read_csv('/Users/deepikanath/dnath796/Quantitative-research-Model/Nat_Gas.csv')
+df = pd.read_csv('Nat_Gas.csv')
 df.columns = ['Date', 'Price']
 df['Date']  = pd.to_datetime(df['Date'], format='%m/%d/%y')   # FIX: explicit format
 prices = df['Price'].values

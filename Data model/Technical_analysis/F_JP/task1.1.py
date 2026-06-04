@@ -1,32 +1,28 @@
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')                          # FIX: avoids macOS plt.show() hang
+matplotlib.use('Agg')                          
 import matplotlib.pyplot as plt
 from datetime import date, timedelta
 
-# FIX: explicit format suppresses UserWarning on pd.to_datetime
 date_time = ["10-2020", "11-2020", "12-2020"]
 date_time = pd.to_datetime(date_time, format='%m-%Y')
 data = [1, 2, 3]
 
-# FIX: parse_dates alone triggers warning; specify format via date_parser
-df = pd.read_csv('/Users/deepikanath/dnath796/Quantitative-research-Model/Nat_Gas.csv')
+df = pd.read_csv('Nat_Gas.csv')
 df.columns = ['Date', 'Price']
-df['Date']  = pd.to_datetime(df['Date'], format='%m/%d/%y')   # FIX: explicit format
+df['Date']  = pd.to_datetime(df['Date'], format='%m/%d/%y')   
 prices = df['Price'].values
 dates  = df['Date'].values
 
-# Plot prices against dates
-# FIX: ax.plot_date() deprecated in matplotlib 3.9 — use ax.plot() instead
 fig, ax = plt.subplots()
-ax.plot(dates, prices, '-')                    # FIX: was ax.plot_date(dates, prices, '-')
+ax.plot(dates, prices, '-')                    
 ax.set_xlabel('Date')
 ax.set_ylabel('Price')
 ax.set_title('Natural Gas Prices')
 ax.tick_params(axis='x', rotation=45)
 plt.tight_layout()
-plt.savefig('nat_gas_raw.png', dpi=150, bbox_inches='tight')   # FIX: save instead of show
+plt.savefig('nat_gas_raw.png', dpi=150, bbox_inches='tight')   
 plt.close()
 
 # From the plot we can see the prices have a natural frequency of around a year but trend upwards.
