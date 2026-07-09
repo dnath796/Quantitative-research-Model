@@ -14,8 +14,8 @@ Implements two methods:
 
 import numpy as np
 
-from black_scholes import BlackScholesInputs, OptionType, price
-from greeks import vega
+from src.pricing.black_scholes import BlackScholesInputs, OptionType, price
+from src.pricing.black_scholes import vega
 
 
 # ----------------------------- ARBITRAGE BOUNDS (provided) -----------------------------
