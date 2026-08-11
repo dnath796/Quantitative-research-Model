@@ -17,8 +17,9 @@ A coursework-ready Python project that develops derivatives knowledge in the sam
 | 9 | Black–Scholes | Inputs, assumptions, `d1`, `d2`, calls and puts | Robust BSM implementation |
 | 10 | Greeks | Delta, gamma, theta, vega and rho | Analytical per-security Greeks and charts |
 | 11 | Portfolio risk | Quantity/multiplier aggregation and delta hedging | `Portfolio` and `delta_hedge` |
-| 12 | Applied analytics | Scenarios, sensitivities, implied volatility, model comparison | Scenario tables, curves, IV and convergence |
-| 13 | Final system | Reproducible dashboard-style report | CLI-generated Markdown, CSV and PNG output |
+| 12 | Applied analytics | Scenarios, sensitivities, implied volatility, volatility surfaces, Monte Carlo, model comparison | Scenario tables, surfaces, simulation, IV and convergence |
+| 13 | Trading simulation | Dynamic delta rebalancing, transaction costs, realized volatility, hedge P&L | Hedging paths and P&L distribution |
+| 14 | Final system | Reproducible dashboard-style report and live webpage | CLI report plus published interactive workbench |
 
 This order is deliberate: a price is meaningful only after the contract and its cash flows are understood, and a Greek is meaningful only after a pricing model exists.
 
@@ -190,4 +191,29 @@ The detailed weekly build and submission plan is in `COURSEWORK_ROADMAP.md`.
 
 ## Scope and extensions
 
-This is an educational analytics engine, not a trading system. Natural extensions are Monte Carlo pricing, finite-difference methods, discrete dividends, volatility surfaces, multi-asset derivatives, transaction-cost-aware hedging, value at risk, live market data, and a web dashboard.
+This is an educational analytics engine, not a production trading system. Natural extensions are finite-difference methods, discrete dividends, multi-asset derivatives, value at risk, live option-chain calibration, and market-data integration.
+
+## Monte Carlo, volatility surface, and trading simulation
+
+The completed engine also includes:
+
+- antithetic Monte Carlo pricing with standard error and confidence intervals;
+- analytical-versus-Monte-Carlo validation and simulation convergence tables;
+- market-quote implied-volatility surface inversion and matrix output;
+- an illustrative skew/smile/term-structure surface generator for teaching;
+- dynamic delta hedging of a short European option under GBM paths;
+- configurable hedge frequency, realized volatility, dividends, and transaction costs;
+- hedge P&L mean, dispersion, percentiles, and a complete sample rebalance path.
+
+```python
+from derivatives_engine import monte_carlo_european, simulate_delta_hedge
+
+mc = monte_carlo_european(100, 105, 0.5, 0.05, 0.25, simulations=100_000)
+hedge = simulate_delta_hedge(
+    100, 105, 0.5, 0.05, 0.25,
+    realized_volatility=0.28,
+    hedge_steps=52,
+    paths=2_000,
+    transaction_cost_bps=1,
+)
+```
