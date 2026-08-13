@@ -61,5 +61,5 @@ def test_integrated_report_smoke(tmp_path: Path):
     report = create_report(request, tmp_path)
     assert report.exists()
     assert "Black-Scholes" in report.read_text()
-    for filename in ("scenarios.csv", "payoff_pnl.png", "greeks.png", "convergence.png"):
+    for filename in ("scenarios.csv", "volatility_surface.csv", "options_chain.csv", "hedging_sample_path.csv", "payoff_pnl.png", "greeks.png", "convergence.png"):
         assert (tmp_path / filename).stat().st_size > 0

@@ -133,7 +133,17 @@ This map takes the project from financial foundations to a complete derivatives 
 
 **Evidence:** a scenario table with value and P&L plus a convergence plot and interpretation.
 
-## Stage 13 — Integrated final submission
+## Stage 13 — Monte Carlo, volatility surfaces, and dynamic hedging
+
+**Learn:** simulation error, confidence intervals, variance reduction, volatility smiles/skews, surface calibration, discrete rebalancing, realized versus implied volatility, and transaction-cost drag.
+
+**Build:** antithetic Monte Carlo pricing, analytical-versus-simulation validation, quote-based implied-volatility surfaces, a dynamic delta-hedging simulator, and a hedging P&L distribution.
+
+**Experiment:** increase simulation paths and hedge frequency separately; change realized volatility relative to implied volatility; add transaction costs; explain the effects on estimator error and hedge P&L.
+
+**Evidence:** confidence interval and convergence tables, a strike/maturity surface, hedge P&L percentiles, and one complete rebalance history.
+
+## Stage 14 — Integrated final submission
 
 **Run:**
 
@@ -169,7 +179,7 @@ python main.py --spot 100 --strike 105 --maturity 0.5 \
 | 9 | Stage 9: Black–Scholes implementation, assumptions, sensitivities |
 | 10 | Stage 10: analytical and finite-difference Greeks |
 | 11 | Stages 11–12: portfolio risk, hedging, IV, scenarios, comparison |
-| 12 | Stage 13: integrated run, written analysis, testing, presentation |
+| 12 | Stages 13–14: Monte Carlo, surfaces, hedging, integrated run and presentation |
 
 ## Completion checklist
 
@@ -184,3 +194,6 @@ python main.py --spot 100 --strike 105 --maturity 0.5 \
 - [ ] I can price a basic future and explain cost of carry.
 - [ ] I can perform implied-volatility, scenario, and convergence analysis.
 - [ ] I can run the complete engine and reproduce its report.
+- [ ] I can explain Monte Carlo confidence intervals and convergence.
+- [ ] I can construct or interpret an implied-volatility surface.
+- [ ] I can simulate delta rebalancing and explain hedging P&L.

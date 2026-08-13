@@ -44,6 +44,7 @@ def main(argv=None) -> int:
     print(f"Black-Scholes:     ${summary['black_scholes']:,.4f}")
     print(f"Binomial 100-step: ${summary['binomial_100']:,.4f}")
     print(f"Binomial 500-step: ${summary['binomial_500']:,.4f}")
+    print(f"Monte Carlo:       ${summary['monte_carlo']:,.4f}")
     print(f"Position delta:     {summary['position_greeks']['delta']:,.4f}")
     print(f"Report:             {report.resolve()}")
     return 0
@@ -51,4 +52,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

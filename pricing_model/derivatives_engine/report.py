@@ -10,6 +10,10 @@ import pandas as pd
 from .models import MarketData, Option, PositionSide
 from .payoffs import option_profit
 from .pricing import black_scholes, binomial_option_price
+from .monte_carlo import monte_carlo_european
+from .hedging import simulate_delta_hedge
+from .volatility import synthetic_smile_surface
+from .options_chain import generate_options_chain
 from .risk import black_scholes_greeks
 from .scenario import option_scenarios
 from .strategies import OptionPosition, OptionStrategy
@@ -43,6 +47,11 @@ def analytics_summary(request: AnalyticsRequest) -> dict:
         market.volatility, 500, option.option_type, market.dividend_yield,
         american=option.style == "american",
     )
+    mc = monte_carlo_european(
+        market.spot, option.strike, option.maturity, market.rate,
+        market.volatility, option.option_type, market.dividend_yield,
+        simulations=20_000, seed=42,
+    )
     greek = black_scholes_greeks(
         market.spot, option.strike, option.maturity, market.rate,
         market.volatility, option.option_type, market.dividend_yield,
@@ -59,6 +68,9 @@ def analytics_summary(request: AnalyticsRequest) -> dict:
         "black_scholes": bs,
         "binomial_100": b100,
         "binomial_500": b500,
+        "monte_carlo": mc.price,
+        "monte_carlo_standard_error": mc.standard_error,
+        "monte_carlo_confidence_interval": (mc.confidence_low, mc.confidence_high),
         "greeks_per_unit": greek.as_dict(),
         "position_greeks": position_greeks.as_dict(),
         "premium": premium,
@@ -86,6 +98,24 @@ def create_report(request: AnalyticsRequest, output_dir: str | Path) -> Path:
         option, market, quantity=signed_quantity, contract_multiplier=request.contract_multiplier
     )
     scenario_frame.to_csv(output / "scenarios.csv", index=False)
+    surface = synthetic_smile_surface(
+        market.spot,
+        [market.spot * ratio for ratio in (0.8, 0.9, 1.0, 1.1, 1.2)],
+        (0.1, 0.25, 0.5, 1.0, 2.0),
+        market.volatility,
+    )
+    surface.to_csv(output / "volatility_surface.csv", index=False)
+    chain = generate_options_chain(
+        market.spot, market.rate, market.volatility, market.dividend_yield,
+        expiration_days=(30, 60, 90, 180, 365), seed=42,
+    )
+    chain.to_csv(output / "options_chain.csv", index=False)
+    hedge = simulate_delta_hedge(
+        market.spot, option.strike, option.maturity, market.rate,
+        market.volatility, option.option_type, market.dividend_yield,
+        hedge_steps=26, paths=500, seed=42, transaction_cost_bps=1,
+    )
+    hedge.sample_path.to_csv(output / "hedging_sample_path.csv", index=False)
     upper = max(market.spot, option.strike) * 1.6
     import numpy as np
     prices = np.linspace(0.35 * min(market.spot, option.strike), upper, 400)
@@ -126,6 +156,7 @@ def create_report(request: AnalyticsRequest, output_dir: str | Path) -> Path:
 | Black-Scholes | ${summary['black_scholes']:,.4f} |
 | CRR binomial (100 steps) | ${summary['binomial_100']:,.4f} |
 | CRR binomial (500 steps) | ${summary['binomial_500']:,.4f} |
+| Monte Carlo (20,000 paths) | ${summary['monte_carlo']:,.4f} ± ${1.96 * summary['monte_carlo_standard_error']:,.4f} |
 
 ## Greeks
 
@@ -157,8 +188,28 @@ Vega and rho are shown per 1.00 change in volatility/rate; divide by 100 for a o
 ![Model convergence](convergence.png)
 
 Detailed scenario results are in `scenarios.csv`.
+
+## Volatility and Hedging
+
+The illustrative strike/maturity surface is in `volatility_surface.csv`.
+
+| Delta-hedging statistic | P&L per option unit |
+|---|---:|
+| Mean | ${hedge.mean_pnl:,.4f} |
+| Standard deviation | ${hedge.std_pnl:,.4f} |
+| 5th percentile | ${hedge.percentile_05:,.4f} |
+| Median | ${hedge.median_pnl:,.4f} |
+| 95th percentile | ${hedge.percentile_95:,.4f} |
+
+One complete rebalance history is in `hedging_sample_path.csv`.
+
+## Options Chain
+
+`options_chain.csv` contains calls and puts across five expirations with bid,
+ask, midpoint, last, spread, volume, open interest, implied volatility, all five
+Greeks, intrinsic/extrinsic value, theoretical value, and market-model difference.
+The market quote and liquidity fields are simulated for coursework use.
 """
     report_path = output / "report.md"
     report_path.write_text(markdown, encoding="utf-8")
     return report_path
-
