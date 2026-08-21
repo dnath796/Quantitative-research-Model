@@ -2,6 +2,8 @@
 
 A coursework-ready Python project that develops derivatives knowledge in the same order that the financial ideas depend on one another: contracts first, then payoffs, positions, strategies, no-arbitrage, numerical pricing, closed-form pricing, Greeks, portfolios, and finally integrated risk analysis.
 
+Interactive dashboard: [dnath796.github.io/Quantitative-research-Model](https://dnath796.github.io/Quantitative-research-Model/)
+
 ## Learning-outcome map
 
 | Stage | Financial topic | What to learn | Project evidence |
