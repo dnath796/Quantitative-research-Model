@@ -9,6 +9,11 @@ tickers = [
     "NVDA",
     "AMZN",
     "GOOG",
+    "META",
+    "TSLA",
+    "UBER",
+    "NFLX",
+    "TSM"
 ]
 
 threshold = 0.10
@@ -21,7 +26,7 @@ for ticker in tickers:
 
         data = yf.download(
             ticker,
-            period="2y",
+            period="5y",
             auto_adjust=True,
             progress=False,
         )
