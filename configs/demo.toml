@@ -1,0 +1,31 @@
+models = ["mean", "ols", "garch", "gjr_garch"]
+
+[data]
+source = "synthetic"
+seed = 42
+periods = 180
+
+[backtest]
+window = "expanding"
+initial_train = 120
+window_size = 120
+dm_lags = 3
+strategy = true
+cost_bps = 5.0
+
+[[features]]
+column = "wti_chg_pct"
+lag = 1
+
+[[features]]
+column = "dxy_chg_pct"
+lag = 1
+
+[[features]]
+column = "sp500_chg_pct"
+lag = 1
+
+[[features]]
+column = "vix_close"
+transform = "difference"
+lag = 1

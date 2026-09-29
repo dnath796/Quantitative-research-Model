@@ -1,0 +1,53 @@
+# Paths are relative to this file. Field units are preserved as decimal returns.
+models = ["mean", "ols", "garch", "gjr_garch"]
+
+[data]
+source = "excel"
+path = "../master_datasheet.xlsx"
+sheet = "Combined Monthly"
+header_row = 2
+target = "wti_chg_pct"
+start = "1991-01"
+end = "2025-12"
+
+[backtest]
+window = "expanding"
+initial_train = 120
+window_size = 120
+dm_lags = 3
+strategy = false
+cost_bps = 5.0
+
+[[features]]
+column = "wti_chg_pct"
+lag = 1
+
+[[features]]
+column = "dxy_chg_pct"
+lag = 1
+
+[[features]]
+column = "sp500_chg_pct"
+lag = 1
+
+[[features]]
+column = "gld_chg_pct"
+lag = 1
+
+[[features]]
+column = "vix_close"
+transform = "difference"
+lag = 1
+
+[[features]]
+column = "tcmsy10_rate_1st_diff"
+lag = 1
+
+# Extra lag is a conservative release-delay assumption, not a vintage-data guarantee.
+[[features]]
+column = "indpro_chg_pct"
+lag = 2
+
+[[features]]
+column = "us_crudeProd_chg_pct"
+lag = 2
