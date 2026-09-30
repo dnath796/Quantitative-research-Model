@@ -1,0 +1,497 @@
+{
+  "cases": [
+    {
+      "name": "bs_call_atm",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call"
+      },
+      "expect": {
+        "price": 10.450583572185565
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_put_atm",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "put"
+      },
+      "expect": {
+        "price": 5.573526022256971
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_call_dividend",
+      "inputs": {
+        "s": 105.0,
+        "k": 100.0,
+        "t": 0.75,
+        "sigma": 0.22,
+        "r": 0.04,
+        "q": 0.02,
+        "type": "call"
+      },
+      "expect": {
+        "price": 11.224765482768618
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_put_deep_itm",
+      "inputs": {
+        "s": 100.0,
+        "k": 150.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "put"
+      },
+      "expect": {
+        "price": 43.04404350126002
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_call_deep_otm",
+      "inputs": {
+        "s": 100.0,
+        "k": 150.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call"
+      },
+      "expect": {
+        "price": 0.3596298261529203
+      },
+      "tol": 1e-10
+    },
+    {
+      "name": "bs_call_high_vol",
+      "inputs": {
+        "s": 18.0,
+        "k": 20.0,
+        "t": 1.0,
+        "sigma": 0.8,
+        "r": 0.04,
+        "q": 0.0,
+        "type": "call"
+      },
+      "expect": {
+        "price": 5.194526793587818
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_put_weekly",
+      "inputs": {
+        "s": 100.0,
+        "k": 98.0,
+        "t": 0.019230769230769232,
+        "sigma": 0.25,
+        "r": 0.03,
+        "q": 0.0,
+        "type": "put"
+      },
+      "expect": {
+        "price": 0.5792636772818263
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_call_leaps",
+      "inputs": {
+        "s": 100.0,
+        "k": 120.0,
+        "t": 3.0,
+        "sigma": 0.28,
+        "r": 0.04,
+        "q": 0.02,
+        "type": "call"
+      },
+      "expect": {
+        "price": 13.686179921252737
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_call_sigma_zero",
+      "inputs": {
+        "s": 100.0,
+        "k": 90.0,
+        "t": 1.0,
+        "sigma": 0.0,
+        "r": 0.05,
+        "q": 0.02,
+        "type": "call"
+      },
+      "expect": {
+        "price": 12.409219125611259
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_put_expiry",
+      "inputs": {
+        "s": 90.0,
+        "k": 100.0,
+        "t": 0.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "put"
+      },
+      "expect": {
+        "price": 10.0
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_call_zero_strike",
+      "inputs": {
+        "s": 100.0,
+        "k": 0.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.02,
+        "type": "call"
+      },
+      "expect": {
+        "price": 98.01986733067552
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_greeks_call_atm",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call"
+      },
+      "expect": {
+        "delta": 0.6368306511756191,
+        "gamma": 0.018762017345846895,
+        "vega": 37.52403469169379,
+        "theta": -6.414027546438197,
+        "rho": 53.232481545376345,
+        "vanna": -0.28143026018770345,
+        "volga": 9.850059106569622
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "bs_greeks_put_itm",
+      "inputs": {
+        "s": 100.0,
+        "k": 110.0,
+        "t": 0.5,
+        "sigma": 0.3,
+        "r": 0.03,
+        "q": 0.02,
+        "type": "put"
+      },
+      "expect": {
+        "delta": -0.6191643481482269,
+        "gamma": 0.017691806373901102,
+        "vega": 26.537709560851656,
+        "theta": -6.91569428465642,
+        "rho": -38.06578799825882,
+        "vanna": 0.6652719527010282,
+        "volga": 15.037403577143687
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "gk_call_eurusd",
+      "inputs": {
+        "s": 1.1,
+        "k": 1.12,
+        "t": 0.5,
+        "sigma": 0.1,
+        "rd": 0.03,
+        "rf": 0.02,
+        "type": "call"
+      },
+      "expect": {
+        "price": 0.02430350861277436,
+        "delta_spot": 0.43648705501591634,
+        "delta_forward": 0.4408738228489027
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "gk_put_negative_rate",
+      "inputs": {
+        "s": 0.95,
+        "k": 0.95,
+        "t": 1.0,
+        "sigma": 0.12,
+        "rd": -0.005,
+        "rf": 0.001,
+        "type": "put"
+      },
+      "expect": {
+        "price": 0.048455906079056366
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "iv_roundtrip_call_atm",
+      "inputs": {
+        "price": 10.450583572185565,
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call"
+      },
+      "expect": {
+        "sigma": 0.2
+      },
+      "tol": 1e-06
+    },
+    {
+      "name": "iv_roundtrip_put_otm",
+      "inputs": {
+        "price": 2.0268374420157116,
+        "s": 100.0,
+        "k": 80.0,
+        "t": 0.5,
+        "r": 0.03,
+        "q": 0.01,
+        "type": "put"
+      },
+      "expect": {
+        "sigma": 0.35
+      },
+      "tol": 1e-06
+    },
+    {
+      "name": "crr_euro_call_2000",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "style": "european",
+        "steps": 2000,
+        "method": "crr"
+      },
+      "expect": {
+        "price": 10.449583775457942
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "crr_amer_put_500",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "put",
+        "style": "american",
+        "steps": 500,
+        "method": "crr"
+      },
+      "expect": {
+        "price": 6.088810110703053
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "crr_amer_put_div_500",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.03,
+        "type": "put",
+        "style": "american",
+        "steps": 500,
+        "method": "crr"
+      },
+      "expect": {
+        "price": 6.970780375518004
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "jr_euro_put_500",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.02,
+        "type": "put",
+        "style": "european",
+        "steps": 500,
+        "method": "jr"
+      },
+      "expect": {
+        "price": 6.333739360103824
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "crr_greeks_call_500",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "style": "european",
+        "steps": 500,
+        "method": "crr"
+      },
+      "expect": {
+        "delta": 0.6367668520017079,
+        "gamma": 0.018793788589860628,
+        "theta": -6.420234436663813
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "geo_asian_call_analytic",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "n_fixings": 12
+      },
+      "expect": {
+        "price": 5.94020022163352
+      },
+      "tol": 1e-08
+    },
+    {
+      "name": "mc_euro_call_100k",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "n_paths": 100000,
+        "seed": 42
+      },
+      "expect": {
+        "price": 10.450583572185565
+      },
+      "tol": 0.15
+    },
+    {
+      "name": "mc_asian_call_cv_12fix",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "n_paths": 100000,
+        "n_steps": 12,
+        "seed": 42
+      },
+      "expect": {
+        "price": 6.156694249949445
+      },
+      "tol": 0.05
+    },
+    {
+      "name": "mc_barrier_single_step_call",
+      "inputs": {
+        "s": 100.0,
+        "k": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "barrier": 130.0,
+        "n_paths": 200000,
+        "n_steps": 1,
+        "seed": 3
+      },
+      "expect": {
+        "price": 5.310827113020051
+      },
+      "tol": 0.06
+    },
+    {
+      "name": "mc_lookback_single_step_call",
+      "inputs": {
+        "s": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "call",
+        "n_paths": 200000,
+        "n_steps": 1,
+        "seed": 3
+      },
+      "expect": {
+        "price": 10.450583572185565
+      },
+      "tol": 0.1
+    },
+    {
+      "name": "mc_lookback_single_step_put",
+      "inputs": {
+        "s": 100.0,
+        "t": 1.0,
+        "sigma": 0.2,
+        "r": 0.05,
+        "q": 0.0,
+        "type": "put",
+        "n_paths": 200000,
+        "n_steps": 1,
+        "seed": 3
+      },
+      "expect": {
+        "price": 5.573526022256971
+      },
+      "tol": 0.07
+    }
+  ]
+}

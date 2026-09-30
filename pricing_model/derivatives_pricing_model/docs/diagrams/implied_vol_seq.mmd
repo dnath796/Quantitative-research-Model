@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    participant U as Caller
+    participant IV as implied_vol
+    participant BS as bs_price / bs_greeks
+
+    U->>IV: implied_vol(price, s, k, t, r, q, type, tol, max_iter)
+    IV->>IV: validate inputs (t > 0, k > 0, finite, tol > 0, max_iter >= 1)
+    IV->>IV: bounds: lower = discounted intrinsic, upper = s e^(-qt) or k e^(-rt)
+    alt price <= lower or price >= upper
+        IV-->>U: no-arbitrage error naming the violated bound
+    end
+    loop double hi from 1.0 (clipped to cap 20.0) while model(hi) < price
+        IV->>BS: bs_price(sigma = hi)
+        BS-->>IV: model price
+        alt hi == cap and model(cap) < price
+            IV-->>U: error: vol exceeds cap (price at the upper bound)
+        end
+    end
+    Note over IV: bracket [lo, hi] contains the unique root<br/>(price strictly increasing in sigma)
+    loop max_iter Newton/bisection steps, sigma from bracket midpoint
+        IV->>BS: bs_price(sigma)
+        BS-->>IV: diff = model - price
+        alt |diff| < tol
+            IV-->>U: sigma (converged in price)
+        end
+        IV->>IV: shrink bracket side using sign(diff)
+        IV->>BS: bs_greeks(sigma).vega
+        BS-->>IV: vega
+        alt vega usable and Newton step inside (lo, hi)
+            IV->>IV: sigma := sigma - diff / vega
+        else tiny vega (deep ITM/OTM) or step escapes
+            IV->>IV: sigma := (lo + hi) / 2  (bisection)
+            alt hi - lo < 1e-12
+                IV-->>U: sigma (converged in vol)
+            end
+        end
+    end
+    alt final |diff| < tol
+        IV-->>U: sigma
+    else budget exhausted
+        IV-->>U: non-convergence error (residual, bracket) - never a half-converged sigma
+    end
