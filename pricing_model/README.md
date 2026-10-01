@@ -1,240 +1,435 @@
-# Derivatives Pricing, Strategy and Risk Analytics Engine
+# Derivatives Pricing Engine
 
-A coursework-ready Python project that develops derivatives knowledge in the same order that the financial ideas depend on one another: contracts first, then payoffs, positions, strategies, no-arbitrage, numerical pricing, closed-form pricing, Greeks, portfolios, and finally integrated risk analysis.
+A cross-language derivatives pricing library implemented in **Python, C++, Rust, and Java**.
 
-Interactive dashboard: [dnath796.github.io/Quantitative-research-Model](https://dnath796.github.io/Quantitative-research-Model/)
+It covers vanilla options and first-generation exotics using three classic pricing approaches:
 
-## Learning-outcome map
+- **Black–Scholes–Merton / Garman–Kohlhagen**
+- **Binomial trees**
+- **Monte Carlo simulation**
 
-| Stage | Financial topic | What to learn | Project evidence |
-|---:|---|---|---|
-| 1 | Foundations | Spot, strike, maturity, rates, yield, volatility, discounting | `MarketData` and validated domain types |
-| 2 | Derivative markets | Forwards, futures, options, swaps; participants and uses | Contract classes and the notes below |
-| 3 | Option basics | Calls, puts, long/short positions, opening and closing | `Option`, `OptionPosition`, payoff functions |
-| 4 | Payoff vs P&L | Premium cash flow, break-even, maximum gain/loss | `payoffs.py`, strategy tables and summaries |
-| 5 | Strategies | Hedging, speculation, income, combinations and spreads | Covered call through iron condor factories |
-| 6 | Futures | Long/short payoff and cost-of-carry pricing | `Future`, `futures_payoff`, `futures_price` |
-| 7 | No-arbitrage | Replication, risk-neutral valuation, put-call parity | Forward value and parity gap functions |
-| 8 | Binomial model | CRR up/down factors, risk-neutral probability, backward induction | European and American lattice pricer |
-| 9 | Black–Scholes | Inputs, assumptions, `d1`, `d2`, calls and puts | Robust BSM implementation |
-| 10 | Greeks | Delta, gamma, theta, vega and rho | Analytical per-security Greeks and charts |
-| 11 | Portfolio risk | Quantity/multiplier aggregation and delta hedging | `Portfolio` and `delta_hedge` |
-| 12 | Applied analytics | Scenarios, sensitivities, implied volatility, volatility surfaces, Monte Carlo, model comparison | Scenario tables, surfaces, simulation, IV and convergence |
-| 13 | Trading simulation | Dynamic delta rebalancing, transaction costs, realized volatility, hedge P&L | Hedging paths and P&L distribution |
-| 14 | Final system | Reproducible dashboard-style report and live webpage | CLI report plus published interactive workbench |
+The Python package is the reference implementation. C++, Rust, and Java implement the same public contract and are checked against a shared cross-language golden-value test suite.
 
-This order is deliberate: a price is meaningful only after the contract and its cash flows are understood, and a Greek is meaningful only after a pricing model exists.
+## What it supports
 
-## Conceptual foundation
+### Analytic pricing
 
-### Major derivative types
+Black–Scholes–Merton for equities with continuous dividend yield and Garman–Kohlhagen for FX.
 
-- **Forward:** private agreement to buy or sell an asset later at a price fixed today. It is customized and carries counterparty risk.
-- **Future:** standardized, exchange-traded forward-like contract with margining and daily settlement.
-- **Option:** gives its buyer a right, but not an obligation, to buy (call) or sell (put). The writer has the corresponding obligation.
-- **Swap:** agreement to exchange cash-flow streams, such as fixed interest for floating interest.
+Includes:
 
-Options trace their modern exchange-traded form to the growth of organized options markets in the 1970s, though option-like agreements are much older. A holder opens a long position by buying; a writer opens a short position by selling. Either can close before expiration with the opposite transaction in the same contract. Exercise uses the contractual right, assignment requires the writer to perform, and expiration ends an unexercised contract.
+- call and put prices
+- delta
+- gamma
+- vega
+- theta
+- rho
+- vanna
+- volga
+- implied volatility via safeguarded Newton iteration with bisection fallback
 
-### Participants and uses
+FX helpers include forward pricing and spot/forward delta conversion.
 
-| Participant | Typical objective |
-|---|---|
-| Hedger | Reduce an existing price, rate, currency, or volatility exposure |
-| Speculator | Seek leveraged profit from a market view while accepting risk |
-| Arbitrageur | Exploit inconsistent prices with offsetting trades |
-| Market maker | Quote two-sided markets and manage inventory risk |
-| Bank/institution | Intermediate, structure products, hedge, or manage portfolios |
-| Corporation | Stabilize input costs, revenues, funding rates, or exchange rates |
-| Portfolio manager | Adjust exposure, protect downside, or generate income |
+### Binomial trees
 
-Examples include a protective put for downside insurance, a long call for bullish speculation, a covered call for premium income, an equity-index future for portfolio beta management, and put-call parity trades for arbitrage.
+Two lattice models are available:
 
-## Installation
+- Cox–Ross–Rubinstein
+- Jarrow–Rudd
 
-Python 3.10 or newer is required.
+Supported features:
+
+- European exercise
+- American exercise
+- tree delta, gamma, and theta
+- optional two-point Richardson averaging
+
+### Monte Carlo
+
+Exact-step geometric Brownian motion simulation for:
+
+- European vanilla options
+- arithmetic Asian options
+- up-and-out barriers
+- floating-strike lookbacks
+
+Variance reduction and risk estimation include:
+
+- antithetic variates
+- control variates
+- standard errors
+- 95% confidence intervals
+- pathwise delta
+- finite-difference delta with common random numbers
+
+## Four languages, one contract
+
+| Capability                             | Python | C++ | Rust | Java |
+| -------------------------------------- | -----: | --: | ---: | ---: |
+| BSM pricing with dividend yield        |      ✓ |   ✓ |    ✓ |    ✓ |
+| Garman–Kohlhagen FX                    |      ✓ |   ✓ |    ✓ |    ✓ |
+| Full Greeks incl. vanna/volga          |      ✓ |   ✓ |    ✓ |    ✓ |
+| Implied volatility                     |      ✓ |   ✓ |    ✓ |    ✓ |
+| CRR and Jarrow–Rudd trees              |      ✓ |   ✓ |    ✓ |    ✓ |
+| European and American exercise         |      ✓ |   ✓ |    ✓ |    ✓ |
+| Tree Greeks                            |      ✓ |   ✓ |    ✓ |    ✓ |
+| Richardson averaging                   |      ✓ |   ✓ |    ✓ |    ✓ |
+| Monte Carlo vanilla                    |      ✓ |   ✓ |    ✓ |    ✓ |
+| Arithmetic Asian                       |      ✓ |   ✓ |    ✓ |    ✓ |
+| Up-and-out barrier                     |      ✓ |   ✓ |    ✓ |    ✓ |
+| Floating-strike lookback               |      ✓ |   ✓ |    ✓ |    ✓ |
+| Pathwise / CRN finite-difference delta |      ✓ |   ✓ |    ✓ |    ✓ |
+| FX helpers                             |      ✓ |   ✓ |    ✓ |    ✓ |
+| Historical volatility                  |      ✓ |   ✓ |    ✓ |    ✓ |
+| Shared golden-value tests              |      ✓ |   ✓ |    ✓ |    ✓ |
+| Negative-rate support                  |      ✓ |   ✓ |    ✓ |    ✓ |
+
+Python additionally accepts NumPy and pandas integer types for count and seed arguments.
+
+## Quick example
+
+Python:
+
+```python
+from dpe import bsm_price
+
+price = bsm_price(
+    s=100.0,
+    k=100.0,
+    t=1.0,
+    sigma=0.20,
+    r=0.05,
+    q=0.00,
+    option_type="call",
+)
+
+print(price)
+# 10.450583572...
+```
+
+The same model behavior is implemented in C++, Rust, and Java under their respective public APIs.
+
+## Repository layout
+
+```text
+derivatives-pricing-engine/
+├── README.md
+├── API_SPEC.md
+├── LEARN.md
+├── COOKBOOK.md
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── GITHUB_PAGES.md
+│   └── diagrams/
+├── data/
+│   ├── portfolio.csv
+│   ├── spots_timeseries.csv
+│   ├── generate_data.py
+│   └── golden/golden.json
+├── python/
+│   ├── src/dpe/
+│   ├── tests/
+│   └── demo.py
+├── cpp/
+│   ├── include/dpe/
+│   ├── src/
+│   ├── tests/
+│   └── CMakeLists.txt
+├── rust/
+│   ├── src/
+│   └── tests/
+└── java/
+    ├── src/main/java/com/quant/dpe/
+    └── src/test/java/com/quant/dpe/
+```
+
+## Documentation
+
+| File                   | Purpose                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `API_SPEC.md`          | Normative cross-language API contract, units, errors, and edge cases                           |
+| `LEARN.md`             | Theory and derivations for BSM/GK, Greeks, implied vol, trees, Monte Carlo, and FX conventions |
+| `COOKBOOK.md`          | Task-oriented examples in all four languages                                                   |
+| `docs/ARCHITECTURE.md` | Component design, numerical decisions, data flow, and testing strategy                         |
+| `docs/GITHUB_PAGES.md` | Documentation-site publishing instructions                                                     |
+
+## Build and test
+
+### Python
+
+Requires Python 3.11+, NumPy, pandas, and pytest.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
+cd python
+pip install -r requirements.txt
+
+PYTHONPATH=src python3 -m pytest -q
+PYTHONPATH=src python3 demo.py
 ```
 
-Run the integrated example:
+The Python suite contains 81 test functions and 150 collected cases.
+
+### C++
+
+Requires C++17, CMake 3.16+, and GoogleTest.
 
 ```bash
-python main.py \
-  --spot 100 --strike 105 --maturity 0.5 \
-  --rate 0.05 --volatility 0.25 --dividend-yield 0.02 \
-  --option-type call --position long --quantity 10 \
-  --output output
+cd cpp
+
+bash build.sh
+ctest --test-dir build --output-on-failure
+./build/demo
 ```
 
-The command prints key values and creates:
+The project builds with `-Wall -Wextra` and is warning-free with g++ 13.
+
+### Rust
+
+Rust edition 2021.
+
+```bash
+cd rust
+
+cargo build --release
+cargo test --release
+cargo run --release --bin demo
+```
+
+The suite contains 46 unit/integration tests plus one doctest.
+
+### Java
+
+Requires Java 21, JUnit 4, and Hamcrest.
+
+```bash
+cd java
+
+bash build.sh
+bash test.sh
+bash demo.sh
+```
+
+The Java build uses `javac -Xlint:all -Werror`.
+
+## Example results
+
+For a standard ATM European call:
 
 ```text
-output/
-├── report.md
-├── scenarios.csv
-├── payoff_pnl.png
-├── greeks.png
-└── convergence.png
+S = 100
+K = 100
+T = 1
+sigma = 20%
+r = 5%
+q = 0
 ```
 
-Run the tests with `python -m pytest`.
-
-## Guided coursework sequence
-
-### 1. Contracts and basic cash flows
-
-Start with `MarketData`, `Option`, `Forward`, `Future`, and `FixedForFloatingSwap` in `derivatives_engine/models.py`. For options, distinguish the terminal payoff from profit:
+the analytic Black–Scholes price is approximately:
 
 ```text
-call payoff = max(S_T - K, 0)
-put payoff  = max(K - S_T, 0)
-long option profit = payoff - premium
-short option profit = premium - payoff
+10.4506
 ```
 
-Explore these with `call_payoff`, `put_payoff`, `option_profit`, and `pnl_table`.
+A Monte Carlo run with 100,000 paths produces estimates consistent with the analytic value, with progressively smaller standard errors when antithetic and control variates are enabled.
 
-### 2. Strategies and combined call writing
+The demo also covers:
 
-`OptionStrategy` adds position profit arrays element by element and derives a P&L table, break-even points, maximum profit, and maximum loss. Included factories are:
+- implied-volatility round trips
+- CRR and Jarrow–Rudd convergence
+- American put early-exercise premia
+- arithmetic Asian options
+- barrier options
+- lookbacks
+- pathwise and finite-difference deltas
+- portfolio-level pricing and Greeks
 
-- covered call and protective put;
-- bull call, bear put, bull put, and bear call spreads;
-- straddle, strangle, collar, butterfly, and iron condor.
+## Cross-language verification
 
-A covered call is combined call writing: long the underlying and short a call. It earns premium and caps upside above the strike, while retaining substantial downside exposure.
-
-### 3. Futures and no-arbitrage
-
-With continuous compounding and dividend yield `q`:
+All four implementations consume the same golden-value file:
 
 ```text
-F_0 = S_0 exp((r-q)T)
+data/golden/golden.json
 ```
 
-European put-call parity is:
+The reference values are generated from Python and stored at full double precision.
+
+Each language loads the same cases and checks its results against the case-specific tolerance.
+
+That means implementation drift—such as:
+
+- a wrong theta sign
+- an incorrect `d2`
+- a mis-scaled vega
+- inconsistent edge-case handling
+
+causes the affected language’s test suite to fail.
+
+The golden suite contains deterministic analytic, tree, and implied-volatility cases as well as Monte Carlo cases with statistical tolerances.
+
+Ports never regenerate the reference values themselves.
+
+## Testing beyond golden values
+
+Each language also verifies core numerical identities and invariants independently.
+
+Tests include:
+
+- put–call parity
+- Greeks against central finite differences
+- monotonicity in spot and strike
+- American value ≥ European value
+- dividend-driven early exercise
+- barrier value ≤ vanilla value
+- Asian value ≤ vanilla value
+- one-step CRR closed form
+- exact `t = 0` limits
+- exact `sigma = 0` limits
+- implied-volatility round trips
+- invalid input handling
+- non-convergence reporting
+- lattice overflow protection
+- deterministic seeded Monte Carlo behavior
+
+## Numerical conventions
+
+Inputs use the following conventions:
+
+- `t`: year fraction
+- `sigma`: annualized volatility as a decimal
+- `r`: continuously compounded rate
+- `q`: continuously compounded dividend yield or foreign rate
+- `theta`: per calendar year
+- `vega`, `vanna`, `volga`: per unit volatility
+- `rho`: per unit rate
+
+For example:
+
+- divide theta by 365 for an approximate daily value
+- divide vega by 100 for sensitivity to one volatility point
+
+For FX:
 
 ```text
-C - P = S_0 exp(-qT) - K exp(-rT)
+r = domestic rate
+q = foreign rate
 ```
 
-The project reports a signed parity gap. A material nonzero gap suggests inconsistent inputs; a real trading conclusion must still account for bid/ask spreads, fees, short-sale constraints, funding, dividends, and execution risk.
+Spot is quoted as domestic currency per unit of foreign currency.
 
-### 4. Binomial pricing
+The library reports premium-excluded spot delta. Forward delta can be obtained through the provided conversion helper.
 
-The Cox–Ross–Rubinstein tree uses:
+## Input validation
+
+Public entry points consistently validate inputs across all four languages.
+
+Among other rules:
 
 ```text
-dt = T / n
-u  = exp(sigma sqrt(dt))
-d  = 1/u
-p  = [exp((r-q)dt) - d] / (u-d)
+s > 0
+k >= 0
+t >= 0
+sigma >= 0
+steps >= 1
+n_paths >= 2
+n_steps >= 1
+n_fixings >= 1
+barrier > 0
+tol > 0
+max_iter >= 1
+seed ∈ [0, 2^63 - 1]
+rel_bump ∈ (0, 1)
 ```
 
-Terminal intrinsic values are discounted backward under the risk-neutral probability. For American contracts, each node takes the larger of intrinsic value and continuation value. Use `return_tree=True` on a small tree to inspect every stock and option node, then increase the steps to study convergence.
+NaN and infinity are rejected.
 
-### 5. Black–Scholes–Merton
+Tree Greeks require at least two steps.
 
-The model assumes frictionless trading, no arbitrage, continuous trading and compounding, a constant risk-free rate and volatility, lognormal underlying prices, and known continuous dividend yield. The closed form is for European exercise; American early-exercise features require a lattice or another numerical method.
+Antithetic Monte Carlo requires an even path count of at least four.
 
-Inputs have clear effects but should not be memorized without context: higher spot generally raises calls and lowers puts; higher strike does the opposite; higher volatility increases both; rates usually raise calls and lower puts; dividends usually lower calls and raise puts. Time effects can be less simple for dividend-paying or deeply in-the-money options.
+## Implied volatility
 
-### 6. Greeks and portfolio risk
+The implied-volatility solver uses a bracketed Newton method with bisection safeguards.
 
-- **Delta:** first-order price sensitivity to spot.
-- **Gamma:** rate of change of delta; curvature with respect to spot.
-- **Theta:** annual calendar-time decay in this project.
-- **Vega:** sensitivity to a 1.00 volatility change; divide by 100 for one percentage point.
-- **Rho:** sensitivity to a 1.00 rate change; divide by 100 for one percentage point.
+It fails explicitly when:
 
-Portfolio Greeks are quantity-weighted sums. Contract multipliers matter: ten listed equity option contracts commonly represent 1,000 underlying units. `Portfolio.delta_hedge` returns the stock trade that offsets current delta; the hedge is local and changes as spot, volatility, and time change.
+- the option price violates no-arbitrage bounds
+- the price is effectively at the solver’s upper-volatility limit
+- convergence is not achieved before `max_iter`
 
-### 7. Complete analytics model
+It never returns a partially converged root as if it were valid.
 
-The final CLI links the full workflow:
+The default tolerance is absolute in price rather than relative.
 
-```text
-Validated inputs
-  -> contract and position
-  -> Black-Scholes and binomial values
-  -> security and position Greeks
-  -> expiration risk
-  -> shocked revaluation scenarios
-  -> payoff, Greek, and convergence charts
-  -> reproducible report
-```
+## Monte Carlo implementation
 
-For a written submission, discuss why binomial values oscillate around and converge toward Black–Scholes, when early exercise matters, which assumptions are least realistic, and why delta-only hedging leaves gamma, vega, theta, basis, liquidity, and model risk.
+Simulation uses exact geometric Brownian motion stepping rather than Euler discretization.
 
-## Python API examples
+Antithetic samples are handled as pair averages when calculating standard errors.
 
-```python
-from derivatives_engine import MarketData, Option, black_scholes
-from derivatives_engine.pricing import binomial_option_price, implied_volatility
-from derivatives_engine.risk import Portfolio, OptionHolding, StockHolding
+Control-variate coefficients are estimated in-sample.
 
-market = MarketData(spot=100, rate=0.05, volatility=0.20, dividend_yield=0.01)
-call = Option(strike=100, maturity=1.0, option_type="call")
+Random streams are deterministic within each language for a fixed toolchain and seed, but streams are not expected to be identical across languages.
 
-bs = black_scholes(100, 100, 1, 0.05, 0.20, "call", 0.01)
-tree = binomial_option_price(100, 100, 1, 0.05, 0.20, 500, "call", 0.01)
-iv = implied_volatility(bs, 100, 100, 1, 0.05, "call", 0.01)
+Memory behavior differs by implementation:
 
-portfolio = Portfolio().add_option(OptionHolding(call, quantity=10, contract_multiplier=100))
-shares_to_trade = portfolio.delta_hedge(market)
-```
+- Python and Java materialize the path matrix
+- C++ and Rust stream paths using approximately `O(n_steps)` memory
 
-See `examples/coursework_walkthrough.py` for an end-to-end console walkthrough.
-The detailed weekly build and submission plan is in `COURSEWORK_ROADMAP.md`.
+Barrier and lookback options are discretely monitored.
 
-## Scope and extensions
+No Broadie–Glasserman–Kou continuity correction is applied.
 
-This is an educational analytics engine, not a production trading system. Natural extensions are finite-difference methods, discrete dividends, multi-asset derivatives, value at risk, live option-chain calibration, and market-data integration.
+## Deliberate scope limits
 
-## Monte Carlo, volatility surface, and trading simulation
+This project intentionally does not implement:
 
-The completed engine also includes:
+- holiday calendars
+- day-count engines
+- settlement lags
+- discrete cash dividends
+- interest-rate term structures
+- volatility surfaces
+- market-data feeds
+- persistence
+- American exercise outside the lattice
+- premium-included FX delta
+- strike-from-delta inversion
+- digital/discontinuous-payoff pathwise delta
 
-- antithetic Monte Carlo pricing with standard error and confidence intervals;
-- analytical-versus-Monte-Carlo validation and simulation convergence tables;
-- market-quote implied-volatility surface inversion and matrix output;
-- an illustrative skew/smile/term-structure surface generator for teaching;
-- dynamic delta hedging of a short European option under GBM paths;
-- configurable hedge frequency, realized volatility, dividends, and transaction costs;
-- hedge P&L mean, dispersion, percentiles, and a complete sample rebalance path.
-- a model-generated options chain containing calls and puts across expirations;
-- bid, ask, midpoint, last, spread, volume, open interest, implied volatility,
-  all five Greeks, intrinsic/extrinsic value, and market-model comparison;
-- chain filtering by expiration, option type, and moneyness.
+The models assume flat scalar parameters in the Black–Scholes–Merton framework.
 
-```python
-from derivatives_engine import monte_carlo_european, simulate_delta_hedge
+## Project goal
 
-mc = monte_carlo_european(100, 105, 0.5, 0.05, 0.25, simulations=100_000)
-hedge = simulate_delta_hedge(
-    100, 105, 0.5, 0.05, 0.25,
-    realized_volatility=0.28,
-    hedge_steps=52,
-    paths=2_000,
-    transaction_cost_bps=1,
-)
-```
+This is a **verified reference implementation of textbook derivatives models**, not a production trading or risk platform.
 
-```python
-from derivatives_engine import generate_options_chain
+The emphasis is on:
 
-chain = generate_options_chain(
-    spot=100,
-    rate=0.05,
-    base_volatility=0.25,
-    dividend_yield=0.02,
-)
-```
+- transparent formulas
+- reproducible numerical behavior
+- explicit edge cases
+- cross-language consistency
+- strong automated tests
+- readable implementations suitable for learning, validation, and experimentation
 
-The generated bid/ask and liquidity fields are reproducible simulated data for
-coursework and interface development. They must not be interpreted as live
-exchange quotes.
+## References
+
+The implementation and documentation draw on the standard literature, including:
+
+1. Black & Scholes (1973), *The Pricing of Options and Corporate Liabilities*
+2. Merton (1973), *Theory of Rational Option Pricing*
+3. Garman & Kohlhagen (1983), *Foreign Currency Option Values*
+4. Cox, Ross & Rubinstein (1979), *Option Pricing: A Simplified Approach*
+5. Jarrow & Rudd (1983), *Option Pricing*
+6. Kemna & Vorst (1990), arithmetic/geometric Asian-option methods
+7. Broadie, Glasserman & Kou (1997), discrete barrier continuity correction
+8. Broadie & Glasserman (1996), simulation-based derivative estimators
+9. Glasserman (2004), *Monte Carlo Methods in Financial Engineering*
+10. Press et al. (2007), *Numerical Recipes*
+11. Cody (1969, 1993), numerical special-function approximations
+12. Haug (2007), *The Complete Guide to Option Pricing Formulas*
+13. Hull (2022), *Options, Futures, and Other Derivatives*
+14. Wystup (2006), *FX Options and Structured Products*
+
+## License
+
+MIT License. See `LICENSE`. No warranty. Not investment advice.
