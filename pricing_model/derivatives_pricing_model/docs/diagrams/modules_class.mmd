@@ -1,0 +1,97 @@
+classDiagram
+    direction LR
+
+    class validation {
+        <<module>>
+        +validate_market_inputs(s, k, t, sigma, r, q)
+        +validate_option_type(str) str
+        +validate_exercise_style(str) str
+        +require_positive(name, x)
+        +require_non_negative(name, x)
+        +require_finite(name, x)
+        +require_integer(name, x, minimum) int
+        +require_seed(x) int
+    }
+
+    class black_scholes {
+        <<module>>
+        +norm_cdf(x) float
+        +norm_pdf(x) float
+        +bs_d1_d2(s, k, t, sigma, r, q) (float, float)
+        +bs_price(s, k, t, sigma, r, q, type) float
+        +bs_greeks(s, k, t, sigma, r, q, type) Greeks
+        +gk_price(s, k, t, sigma, rd, rf, type) float
+        +gk_greeks(s, k, t, sigma, rd, rf, type) Greeks
+        +implied_vol(price, s, k, t, r, q, type, tol, max_iter) float
+    }
+
+    class binomial {
+        <<module>>
+        +binomial_price(s, k, t, sigma, r, q, type, style, steps, method, richardson) float
+        +binomial_greeks(s, k, t, sigma, r, q, type, style, steps, method) BinomialGreeks
+    }
+
+    class monte_carlo {
+        <<module>>
+        +simulate_gbm_paths(s, t, sigma, r, q, n_paths, n_steps, seed, antithetic) matrix
+        +geometric_asian_price(s, k, t, sigma, r, q, type, n_fixings) float
+        +mc_european(...) MCResult
+        +mc_asian_arithmetic(...) MCResult
+        +mc_barrier_up_out(...) MCResult
+        +mc_lookback_floating(...) MCResult
+        +mc_delta_pathwise(...) MCResult
+        +mc_delta_fd_crn(...) MCResult
+    }
+
+    class fx {
+        <<module>>
+        +fx_forward(s, t, rd, rf) float
+        +spot_delta_to_forward(delta, t, rf) float
+        +forward_delta_to_spot(delta, t, rf) float
+    }
+
+    class utils {
+        <<module>>
+        +historical_vol(prices, periods_per_year) float
+    }
+
+    class Greeks {
+        <<value type>>
+        +price: float
+        +delta: float
+        +gamma: float
+        +vega: float
+        +theta: float
+        +rho: float
+        +vanna: float
+        +volga: float
+    }
+
+    class BinomialGreeks {
+        <<value type>>
+        +price: float
+        +delta: float
+        +gamma: float
+        +theta: float
+    }
+
+    class MCResult {
+        <<value type>>
+        +value: float
+        +std_error: float
+        +ci_low: float
+        +ci_high: float
+        +n_paths: int
+    }
+
+    black_scholes ..> validation : validates via
+    binomial ..> validation : validates via
+    monte_carlo ..> validation : validates via
+    fx ..> validation : validates via
+
+    black_scholes --> Greeks : returns
+    binomial --> BinomialGreeks : returns
+    monte_carlo --> MCResult : returns
+
+    binomial ..> black_scholes : sigma=0 limit reuses bs_price
+    monte_carlo ..> black_scholes : norm_cdf for geometric Asian

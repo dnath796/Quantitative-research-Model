@@ -1,0 +1,11 @@
+id,underlying_type,s,k,t,sigma,r,q,type,style,quantity
+EQ_DIV_C1,equity,105.0,100.0,0.75,0.22,0.04,0.02,call,european,100
+EQ_DIV_P1,equity,105.0,110.0,0.75,0.22,0.04,0.02,put,european,-50
+EQ_GROWTH_C1,equity,250.0,260.0,1.0,0.35,0.04,0.0,call,european,40
+EQ_SMALLCAP_C1,equity,18.0,20.0,1.0,0.8,0.04,0.0,call,european,500
+EQ_WEEKLY_P1,equity,100.0,98.0,0.019230769230769232,0.25,0.03,0.0,put,european,200
+EQ_LEAPS_C1,equity,100.0,120.0,3.0,0.28,0.04,0.02,call,european,75
+EQ_AMER_P1,equity,95.0,100.0,1.0,0.3,0.05,0.0,put,american,60
+FX_EURUSD_C1,fx,1.1,1.12,0.5,0.1,0.03,0.02,call,european,1000000
+FX_EURUSD_P1,fx,1.1,1.05,1.0,0.11,0.03,0.02,put,european,-500000
+FX_NEGRATE_P1,fx,0.95,0.95,1.0,0.12,-0.005,0.001,put,european,750000
