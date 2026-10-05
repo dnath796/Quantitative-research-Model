@@ -4,6 +4,7 @@
 #include <cmath>
 #include <sstream>
 #include <stdexcept>
+#include <limits>
 
 #include "validation.hpp"
 
@@ -29,6 +30,13 @@ void d1_d2(double s, double k, double t, double sigma, double r, double q,
   const double sq_t = std::sqrt(t);
   *d1 = (std::log(s / k) + (r - q + 0.5 * sigma * sigma) * t) / (sigma * sq_t);
   *d2 = *d1 - sigma * sq_t;
+}
+
+double atm_tolerance(double discounted_spot, double discounted_strike) {
+  const double scale =
+      std::max({1.0, std::abs(discounted_spot), std::abs(discounted_strike)});
+
+  return 64.0 * std::numeric_limits<double>::epsilon() * scale;
 }
 
 std::string fmt(double value) {
@@ -63,11 +71,23 @@ double bs_price(double s, double k, double t, double sigma, double r, double q,
   }
 
   if (sigma <= 0.0) {
-    // Deterministic world: S_T equals the forward almost surely.
-    const double fwd_intrinsic = s * df_q - k * df_r;
-    return option_type == OptionType::Call ? std::max(0.0, fwd_intrinsic)
-                                           : std::max(0.0, -fwd_intrinsic);
+  const double discounted_spot = s * df_q;
+  const double discounted_strike = k * df_r;
+  const double fwd_intrinsic = discounted_spot - discounted_strike;
+
+  const double tol =
+      atm_tolerance(discounted_spot, discounted_strike);
+
+  // Treat numerically indistinguishable forward values as exactly ATM.
+  // Return literal +0.0 to preserve the documented tie contract.
+  if (std::abs(fwd_intrinsic) <= tol) {
+    return 0.0;
   }
+
+  return option_type == OptionType::Call
+             ? std::max(0.0, fwd_intrinsic)
+             : std::max(0.0, -fwd_intrinsic);
+}
 
   double d1 = 0.0, d2 = 0.0;
   d1_d2(s, k, t, sigma, r, q, &d1, &d2);
@@ -89,23 +109,36 @@ Greeks bs_greeks(double s, double k, double t, double sigma, double r, double q,
     // Limit region: the payoff is (discounted) intrinsic on the forward;
     // second-order Greeks vanish and delta/theta/rho are the derivatives of
     // the limiting price (the at-the-money boundary maps to the ITM branch).
-    const double fwd = s * df_q - k * df_r;  // sign of forward moneyness
-    double delta = 0.0, theta = 0.0, rho = 0.0;
-    if (option_type == OptionType::Call) {
-      const bool itm = fwd >= 0.0 || k <= 0.0;
-      if (itm) {
-        delta = df_q;
-        theta = q * s * df_q - r * k * df_r;
-        rho = k * t * df_r;
-      }
-    } else {
-      const bool itm = fwd < 0.0 && k > 0.0;
-      if (itm) {
-        delta = -df_q;
-        theta = r * k * df_r - q * s * df_q;
-        rho = -k * t * df_r;
-      }
-    }
+    const double discounted_spot = s * df_q;
+const double discounted_strike = k * df_r;
+const double fwd = discounted_spot - discounted_strike;
+
+const double tol =
+    atm_tolerance(discounted_spot, discounted_strike);
+
+const bool atm = std::abs(fwd) <= tol;
+
+double delta = 0.0, theta = 0.0, rho = 0.0;
+
+if (option_type == OptionType::Call) {
+  // Contract: ATM maps to the call ITM branch.
+  const bool itm = fwd > tol || atm || k <= 0.0;
+
+  if (itm) {
+    delta = df_q;
+    theta = q * s * df_q - r * k * df_r;
+    rho = k * t * df_r;
+  }
+} else {
+  // Contract: ATM maps to the put OTM branch.
+  const bool itm = fwd < -tol && k > 0.0;
+
+  if (itm) {
+    delta = -df_q;
+    theta = r * k * df_r - q * s * df_q;
+    rho = -k * t * df_r;
+  }
+}
     return Greeks{price, delta, 0.0, 0.0, theta, rho, 0.0, 0.0};
   }
 
@@ -168,16 +201,31 @@ double implied_vol(double price, double s, double k, double t, double r, double 
     upper = k * df_r;
   }
 
-  if (price <= lower) {
-    throw std::invalid_argument(
-        "price " + fmt(price) + " violates the no-arbitrage lower bound " +
-        fmt(lower) + " (below intrinsic); no implied vol exists");
-  }
-  if (price >= upper) {
-    throw std::invalid_argument("price " + fmt(price) +
-                                " violates the no-arbitrage upper bound " +
-                                fmt(upper) + "; no implied vol exists");
-  }
+ const double bound_scale =
+    std::max({1.0, std::abs(lower), std::abs(upper)});
+
+const double bound_tol =
+    64.0 * std::numeric_limits<double>::epsilon() * bound_scale;
+
+if (price < lower - bound_tol) {
+  throw std::invalid_argument(
+      "price " + fmt(price) +
+      " violates the no-arbitrage lower bound " +
+      fmt(lower) +
+      "; no implied vol exists");
+}
+
+if (std::abs(price - lower) <= bound_tol) {
+  return 0.0;
+}
+
+if (price >= upper) {
+  throw std::invalid_argument(
+      "price " + fmt(price) +
+      " violates the no-arbitrage upper bound " +
+      fmt(upper) +
+      "; no implied vol exists");
+}
 
   const auto f = [&](double sig) {
     return bs_price(s, k, t, sig, r, q, option_type) - price;

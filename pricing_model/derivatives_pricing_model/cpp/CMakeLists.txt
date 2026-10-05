@@ -51,3 +51,13 @@ target_compile_definitions(dpe_tests PRIVATE
 
 include(GoogleTest)
 gtest_discover_tests(dpe_tests)
+
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(
+        dpe PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+endif()
